@@ -38,7 +38,6 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                 ),
 
-                // Glassmorphic Card
                 ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: BackdropFilter(

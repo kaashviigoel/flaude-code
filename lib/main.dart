@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mausam/screens/onboarding.dart';
+import 'package:mausam/screens/loading.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +29,7 @@ class MausamApp extends StatelessWidget {
         brightness: Brightness.dark,
         scaffoldBackgroundColor: const Color(0xFF070B12),
       ),
-      home: const OnboardingScreen(),
+      home: const Loading(),
     );
   }
 }

@@ -46,11 +46,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           gradient: RadialGradient(
             center: Alignment.center,
             radius: 1.3,
-            colors: [
-              Color(0xFF1E3354), // Deep indigo/blue glow
-              Color(0xFF0F1B2C), // Very dark navy
-              Color(0xFF070B12), // Premium dark gray-black
-            ],
+            colors: [Color(0xFF1E3354), Color(0xFF0F1B2C), Color(0xFF070B12)],
             stops: [0.0, 0.55, 1.0],
           ),
         ),

@@ -20,14 +20,17 @@ class WeatherApiService {
 
   final String defaultUserId = 'demo-user';
   Future<Position> currentPosition() async {
-    if (!await Geolocator.isLocationServiceEnabled())
+    if (!await Geolocator.isLocationServiceEnabled()) {
       throw Exception('Location services are disabled');
+    }
     var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied)
+    if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+    }
     if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever)
+        permission == LocationPermission.deniedForever) {
       throw Exception('Location permission is required');
+    }
     return Geolocator.getCurrentPosition();
   }
 
@@ -38,8 +41,9 @@ class WeatherApiService {
     final r = await http
         .get(Uri.parse('$baseUrl$path').replace(queryParameters: query))
         .timeout(const Duration(seconds: 12));
-    if (r.statusCode < 200 || r.statusCode >= 300)
+    if (r.statusCode < 200 || r.statusCode >= 300) {
       throw Exception('Backend returned ${r.statusCode}: ${r.body}');
+    }
     return jsonDecode(r.body) as Map<String, dynamic>;
   }
 
@@ -88,8 +92,9 @@ class WeatherApiService {
     final r = await http
         .get(Uri.parse('$baseUrl/api/users/$id/locations'))
         .timeout(const Duration(seconds: 12));
-    if (r.statusCode != 200)
+    if (r.statusCode != 200) {
       throw Exception('Backend returned ${r.statusCode}');
+    }
     return (jsonDecode(r.body) as List)
         .map((e) => SavedLocationModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -108,8 +113,9 @@ class WeatherApiService {
           body: jsonEncode({'name': name, 'latitude': lat, 'longitude': lon}),
         )
         .timeout(const Duration(seconds: 12));
-    if (r.statusCode != 201)
+    if (r.statusCode != 201) {
       throw Exception('Backend returned ${r.statusCode}');
+    }
     return SavedLocationModel.fromJson(
       jsonDecode(r.body) as Map<String, dynamic>,
     );

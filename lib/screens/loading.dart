@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
 import 'onboarding.dart';
 
 class Loading extends StatefulWidget {
@@ -45,58 +44,18 @@ class _LoadingState extends State<Loading> {
                 ),
               ),
               child: Stack(
-                clipBehavior: Clip.antiAlias,
+                fit: StackFit.expand,
                 children: [
-                  // ------------------------------------------------
-                  // Figma decorative image
-                  // ------------------------------------------------
-                  //
-                  // Your Figma Dev Mode exported this as:
-                  //
-                  // NetworkImage("https://placehold.co/416x82")
-                  //
-                  // That is only a placeholder. We will replace
-                  // this with your actual exported Figma asset.
-                  //
-                  Positioned(
+                  const Positioned(
                     left: -11,
                     top: 441,
-                    child: SizedBox(width: 416, height: 82, child: Container()),
+                    child: SizedBox(width: 416, height: 82),
                   ),
-
-                  // ------------------------------------------------
-                  // Bottom circular shape
-                  // ------------------------------------------------
-                  Positioned(
-                    left: 61,
-                    top: 524,
-                    child: Container(
-                      width: 384,
-                      height: 384,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00050B),
-                        borderRadius: BorderRadius.circular(9999),
-                      ),
-                    ),
-                  ),
-
-                  // ------------------------------------------------
-                  // MAUSAM logo
-                  // ------------------------------------------------
-                  //
-                  // We'll put the actual logo here once we use
-                  // the logo asset from your Figma.
-                  //
                   Center(
-                    child: Text(
-                      'MAUSAM',
-                      style: const TextStyle(
-                        fontFamily: 'Josefin Sans',
-                        fontSize: 32,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 3.2,
-                        color: Color(0xFFF4F5F2),
-                      ),
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 300,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ],
