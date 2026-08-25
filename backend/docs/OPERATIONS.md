@@ -13,9 +13,8 @@ Copy `.env.example` to `.env` and set:
 | `WEATHER_CACHE_TTL_SECONDS` | Fresh cache lifetime | `300` |
 | `WEATHER_CACHE_STALE_SECONDS` | Maximum stale fallback age | `3600` |
 | `DATABASE_URL` | Async PostgreSQL connection string | local `mausam` database |
-| `SUPABASE_DB_URL` | Optional hosted Supabase PostgreSQL connection string; takes precedence over `DATABASE_URL` | empty |
 
-Never commit `.env` or place API keys in Flutter code. For Supabase, copy the async connection string from **Project Settings → Database → Connection string → URI** and change the driver prefix from `postgresql://` to `postgresql+asyncpg://`.
+Never commit `.env` or place API keys in Flutter code.
 
 ## Start the backend
 
