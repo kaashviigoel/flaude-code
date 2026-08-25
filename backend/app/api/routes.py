@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import delete, select
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -78,7 +77,7 @@ async def save_preferences(user_id: str, body: UserPreferencesIn, db: AsyncSessi
         await db.commit()
         await db.refresh(item)
         return UserPreferencesOut.model_validate(item, from_attributes=True)
-    except SQLAlchemyError as exc:
+    except Exception as exc:
         await db.rollback()
         raise HTTPException(status_code=503, detail="Database is unavailable") from exc
 
@@ -88,7 +87,7 @@ async def get_preferences(user_id: str, db: AsyncSession = Depends(get_db)) -> U
     """Return saved personalization preferences for a user."""
     try:
         item = await db.get(UserPreference, user_id)
-    except SQLAlchemyError as exc:
+    except Exception as exc:
         raise HTTPException(status_code=503, detail="Database is unavailable") from exc
     if item is None:
         raise HTTPException(status_code=404, detail="Preferences not found")
@@ -104,7 +103,7 @@ async def add_location(user_id: str, body: SavedLocationIn, db: AsyncSession = D
         await db.commit()
         await db.refresh(item)
         return SavedLocationOut.model_validate(item, from_attributes=True)
-    except SQLAlchemyError as exc:
+    except Exception as exc:
         await db.rollback()
         raise HTTPException(status_code=503, detail="Database is unavailable") from exc
 
@@ -115,7 +114,7 @@ async def list_locations(user_id: str, db: AsyncSession = Depends(get_db)) -> li
     try:
         result = await db.execute(select(SavedLocation).where(SavedLocation.user_id == user_id).order_by(SavedLocation.created_at.desc()))
         return [SavedLocationOut.model_validate(item, from_attributes=True) for item in result.scalars()]
-    except SQLAlchemyError as exc:
+    except Exception as exc:
         raise HTTPException(status_code=503, detail="Database is unavailable") from exc
 
 
@@ -127,6 +126,8 @@ async def delete_location(user_id: str, location_id: int, db: AsyncSession = Dep
         if result.rowcount == 0:
             raise HTTPException(status_code=404, detail="Location not found")
         await db.commit()
-    except SQLAlchemyError as exc:
+    except HTTPException:
+        raise
+    except Exception as exc:
         await db.rollback()
         raise HTTPException(status_code=503, detail="Database is unavailable") from exc
