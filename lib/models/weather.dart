@@ -3,11 +3,7 @@ class WeatherLocation {
   final double longitude;
   final String? name;
 
-  WeatherLocation({
-    required this.latitude,
-    required this.longitude,
-    this.name,
-  });
+  WeatherLocation({required this.latitude, required this.longitude, this.name});
 
   factory WeatherLocation.fromJson(Map<String, dynamic> json) {
     return WeatherLocation(
@@ -18,10 +14,10 @@ class WeatherLocation {
   }
 
   Map<String, dynamic> toJson() => {
-        'latitude': latitude,
-        'longitude': longitude,
-        'name': name,
-      };
+    'latitude': latitude,
+    'longitude': longitude,
+    'name': name,
+  };
 }
 
 class WeatherNow {
@@ -73,19 +69,19 @@ class WeatherNow {
   }
 
   Map<String, dynamic> toJson() => {
-        'observed_at': observedAt?.toIso8601String(),
-        'temperature_c': temperatureC,
-        'feels_like_c': feelsLikeC,
-        'humidity_pct': humidityPct,
-        'pressure_hpa': pressureHpa,
-        'wind_speed_kmph': windSpeedKmph,
-        'wind_direction_deg': windDirectionDeg,
-        'visibility_m': visibilityM,
-        'rainfall_1h_mm': rainfall1hMm,
-        'uv_index': uvIndex,
-        'weather_code': weatherCode,
-        'weather_description': weatherDescription,
-      };
+    'observed_at': observedAt?.toIso8601String(),
+    'temperature_c': temperatureC,
+    'feels_like_c': feelsLikeC,
+    'humidity_pct': humidityPct,
+    'pressure_hpa': pressureHpa,
+    'wind_speed_kmph': windSpeedKmph,
+    'wind_direction_deg': windDirectionDeg,
+    'visibility_m': visibilityM,
+    'rainfall_1h_mm': rainfall1hMm,
+    'uv_index': uvIndex,
+    'weather_code': weatherCode,
+    'weather_description': weatherDescription,
+  };
 }
 
 class ForecastPeriod {
@@ -125,8 +121,8 @@ class ForecastPeriod {
       temperatureMaxC: (json['temperature_max_c'] as num?)?.toDouble(),
       feelsLikeC: (json['feels_like_c'] as num?)?.toDouble(),
       humidityPct: (json['humidity_pct'] as num?)?.toDouble(),
-      precipitationProbability:
-          (json['precipitation_probability'] as num?)?.toDouble(),
+      precipitationProbability: (json['precipitation_probability'] as num?)
+          ?.toDouble(),
       rainfallMm: (json['rainfall_mm'] as num?)?.toDouble(),
       windSpeedKmph: (json['wind_speed_kmph'] as num?)?.toDouble(),
       weatherCode: json['weather_code'] as int?,
@@ -135,36 +131,35 @@ class ForecastPeriod {
   }
 
   Map<String, dynamic> toJson() => {
-        'starts_at': startsAt?.toIso8601String(),
-        'temperature_c': temperatureC,
-        'temperature_min_c': temperatureMinC,
-        'temperature_max_c': temperatureMaxC,
-        'feels_like_c': feelsLikeC,
-        'humidity_pct': humidityPct,
-        'precipitation_probability': precipitationProbability,
-        'rainfall_mm': rainfallMm,
-        'wind_speed_kmph': windSpeedKmph,
-        'weather_code': weatherCode,
-        'weather_description': weatherDescription,
-      };
+    'starts_at': startsAt?.toIso8601String(),
+    'temperature_c': temperatureC,
+    'temperature_min_c': temperatureMinC,
+    'temperature_max_c': temperatureMaxC,
+    'feels_like_c': feelsLikeC,
+    'humidity_pct': humidityPct,
+    'precipitation_probability': precipitationProbability,
+    'rainfall_mm': rainfallMm,
+    'wind_speed_kmph': windSpeedKmph,
+    'weather_code': weatherCode,
+    'weather_description': weatherDescription,
+  };
 }
 
 class WeatherForecast {
   final List<ForecastPeriod> hourly;
   final List<ForecastPeriod> daily;
 
-  WeatherForecast({
-    this.hourly = const [],
-    this.daily = const [],
-  });
+  WeatherForecast({this.hourly = const [], this.daily = const []});
 
   factory WeatherForecast.fromJson(Map<String, dynamic> json) {
     return WeatherForecast(
-      hourly: (json['hourly'] as List<dynamic>?)
+      hourly:
+          (json['hourly'] as List<dynamic>?)
               ?.map((e) => ForecastPeriod.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
-      daily: (json['daily'] as List<dynamic>?)
+      daily:
+          (json['daily'] as List<dynamic>?)
               ?.map((e) => ForecastPeriod.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -172,9 +167,9 @@ class WeatherForecast {
   }
 
   Map<String, dynamic> toJson() => {
-        'hourly': hourly.map((e) => e.toJson()).toList(),
-        'daily': daily.map((e) => e.toJson()).toList(),
-      };
+    'hourly': hourly.map((e) => e.toJson()).toList(),
+    'daily': daily.map((e) => e.toJson()).toList(),
+  };
 }
 
 class WeatherAlert {
@@ -210,13 +205,13 @@ class WeatherAlert {
   }
 
   Map<String, dynamic> toJson() => {
-        'sender': sender,
-        'event': event,
-        'severity': severity,
-        'starts_at': startsAt?.toIso8601String(),
-        'ends_at': endsAt?.toIso8601String(),
-        'description': description,
-      };
+    'sender': sender,
+    'event': event,
+    'severity': severity,
+    'starts_at': startsAt?.toIso8601String(),
+    'ends_at': endsAt?.toIso8601String(),
+    'description': description,
+  };
 }
 
 class WeatherAlerts {
@@ -226,7 +221,8 @@ class WeatherAlerts {
 
   factory WeatherAlerts.fromJson(Map<String, dynamic> json) {
     return WeatherAlerts(
-      items: (json['items'] as List<dynamic>?)
+      items:
+          (json['items'] as List<dynamic>?)
               ?.map((e) => WeatherAlert.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -234,8 +230,8 @@ class WeatherAlerts {
   }
 
   Map<String, dynamic> toJson() => {
-        'items': items.map((e) => e.toJson()).toList(),
-      };
+    'items': items.map((e) => e.toJson()).toList(),
+  };
 }
 
 class WeatherCardData {
@@ -267,13 +263,13 @@ class WeatherCardData {
   }
 
   Map<String, dynamic> toJson() => {
-        'card_id': cardId,
-        'title': title,
-        'priority': priority,
-        'visible': visible,
-        'reason': reason,
-        'data': data,
-      };
+    'card_id': cardId,
+    'title': title,
+    'priority': priority,
+    'visible': visible,
+    'reason': reason,
+    'data': data,
+  };
 }
 
 class DashboardResponse {
@@ -306,17 +302,21 @@ class DashboardResponse {
   factory DashboardResponse.fromJson(Map<String, dynamic> json) {
     return DashboardResponse(
       location: WeatherLocation.fromJson(
-          json['location'] as Map<String, dynamic>? ??
-              {'latitude': 0.0, 'longitude': 0.0}),
+        json['location'] as Map<String, dynamic>? ??
+            {'latitude': 0.0, 'longitude': 0.0},
+      ),
       current: WeatherNow.fromJson(
-          json['current'] as Map<String, dynamic>? ?? {}),
+        json['current'] as Map<String, dynamic>? ?? {},
+      ),
       forecast: WeatherForecast.fromJson(
-          json['forecast'] as Map<String, dynamic>? ?? {}),
+        json['forecast'] as Map<String, dynamic>? ?? {},
+      ),
       alerts: WeatherAlerts.fromJson(
-          json['alerts'] as Map<String, dynamic>? ?? {}),
-      cards: (json['cards'] as List<dynamic>?)
-              ?.map((e) =>
-                  WeatherCardData.fromJson(e as Map<String, dynamic>))
+        json['alerts'] as Map<String, dynamic>? ?? {},
+      ),
+      cards:
+          (json['cards'] as List<dynamic>?)
+              ?.map((e) => WeatherCardData.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
       persona: json['persona'] as String? ?? 'commuter',
@@ -326,7 +326,8 @@ class DashboardResponse {
           : DateTime.now(),
       dataStatus: json['data_status'] as String? ?? 'fresh',
       dataWarning: json['data_warning'] as String?,
-      recommendations: (json['recommendations'] as List<dynamic>?)
+      recommendations:
+          (json['recommendations'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],

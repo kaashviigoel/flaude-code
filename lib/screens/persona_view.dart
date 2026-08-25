@@ -7,10 +7,7 @@ import 'package:mausam/widgets/weather_card.dart';
 class PersonaViewScreen extends StatefulWidget {
   final String? selectedMode;
 
-  const PersonaViewScreen({
-    super.key,
-    this.selectedMode,
-  });
+  const PersonaViewScreen({super.key, this.selectedMode});
 
   @override
   State<PersonaViewScreen> createState() => _PersonaViewScreenState();
@@ -27,9 +24,10 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
   }
 
   Future<void> _loadData() async {
+    final position = await _apiService.currentPosition();
     final data = await _apiService.fetchDashboard(
-      lat: 37.7749,
-      lon: -122.4194,
+      lat: position.latitude,
+      lon: position.longitude,
       persona: widget.selectedMode ?? 'health',
     );
     if (mounted) {
@@ -47,7 +45,7 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
 
     final current = _dashboardData?.current;
     final uv = current?.uvIndex ?? 6.0;
-    final humidity = current?.humidityPct ?? 42.0;
+    final humidity = current?.humidityPct;
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -81,8 +79,10 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
 
                 // Persona Pill Badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(16),
@@ -130,12 +130,10 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
 
                 const SizedBox(height: 24),
 
-                // Hero AQI Card
-                const AqiCardWidget(
-                  location: 'San Francisco',
-                  condition: 'Partly Cloudy • 68°F',
-                  aqi: 112,
-                  aqiStatus: 'Unhealthy for Sensitive Groups',
+                // AQI is not part of the backend contract yet, so do not show fabricated values.
+                Text(
+                  'Air quality data is not available from the weather provider.',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.65)),
                 ),
 
                 // Trigger Levels Section
@@ -156,9 +154,7 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Left Column: Pollen Card
-                    const Expanded(
-                      child: PollenCardWidget(),
-                    ),
+                    const Expanded(child: PollenCardWidget()),
                     const SizedBox(width: 14),
                     // Right Column: UV & Humidity
                     Expanded(
@@ -166,7 +162,7 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
                         children: [
                           UvCardWidget(uvIndex: uv),
                           const SizedBox(height: 14),
-                          HumidityCardWidget(humidity: humidity),
+                          HumidityCardWidget(humidity: humidity ?? 0),
                         ],
                       ),
                     ),
@@ -212,10 +208,30 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
 
   Widget _buildHourlyOutlookStrip() {
     final hours = [
-      {'time': 'Now', 'temp': '68°', 'dotColor': const Color(0xFFF68B8B), 'icon': Icons.wb_sunny_outlined},
-      {'time': '1 PM', 'temp': '70°', 'dotColor': const Color(0xFFF68B8B), 'icon': Icons.wb_sunny},
-      {'time': '2 PM', 'temp': '72°', 'dotColor': const Color(0xFFFFCD00), 'icon': Icons.wb_sunny},
-      {'time': '3 PM', 'temp': '71°', 'dotColor': const Color(0xFFFFCD00), 'icon': Icons.cloud_outlined},
+      {
+        'time': 'Now',
+        'temp': '68°',
+        'dotColor': const Color(0xFFF68B8B),
+        'icon': Icons.wb_sunny_outlined,
+      },
+      {
+        'time': '1 PM',
+        'temp': '70°',
+        'dotColor': const Color(0xFFF68B8B),
+        'icon': Icons.wb_sunny,
+      },
+      {
+        'time': '2 PM',
+        'temp': '72°',
+        'dotColor': const Color(0xFFFFCD00),
+        'icon': Icons.wb_sunny,
+      },
+      {
+        'time': '3 PM',
+        'temp': '71°',
+        'dotColor': const Color(0xFFFFCD00),
+        'icon': Icons.cloud_outlined,
+      },
     ];
 
     return SizedBox(

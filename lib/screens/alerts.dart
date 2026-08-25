@@ -23,7 +23,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
   Future<void> _loadAlerts() async {
     setState(() => _isLoading = true);
-    final alerts = await _apiService.fetchAlerts(lat: 12.9716, lon: 77.5946);
+    final position = await _apiService.currentPosition();
+    final alerts = await _apiService.fetchAlerts(
+      lat: position.latitude,
+      lon: position.longitude,
+    );
     if (mounted) {
       setState(() {
         _alerts = alerts;
@@ -82,8 +86,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                 // Active Warnings Pill Badge
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(16),

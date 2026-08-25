@@ -28,8 +28,9 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   Future<void> _loadSavedLocations() async {
-    final locations =
-        await _apiService.fetchSavedLocations(_apiService.defaultUserId);
+    final locations = await _apiService.fetchSavedLocations(
+      _apiService.defaultUserId,
+    );
     if (mounted) {
       setState(() {
         _savedLocations = locations;
@@ -48,9 +49,7 @@ class _MapsScreenState extends State<MapsScreen> {
         backgroundColor: const Color(0xFF0F1B2C),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(
-            color: Colors.white.withValues(alpha: 0.15),
-          ),
+          side: BorderSide(color: Colors.white.withValues(alpha: 0.15)),
         ),
         title: const Text(
           'Save New Location',
@@ -64,9 +63,13 @@ class _MapsScreenState extends State<MapsScreen> {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'City Name (e.g. Chennai)',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                ),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
                 ),
                 focusedBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFFFFCD00)),
@@ -76,26 +79,38 @@ class _MapsScreenState extends State<MapsScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: latCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Latitude',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                ),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: lonCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Longitude',
-                hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.4),
+                ),
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.2),
+                  ),
                 ),
               ),
             ),
@@ -104,7 +119,10 @@ class _MapsScreenState extends State<MapsScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
+            child: const Text(
+              'CANCEL',
+              style: TextStyle(color: Colors.white54),
+            ),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -114,7 +132,11 @@ class _MapsScreenState extends State<MapsScreen> {
               if (name.isNotEmpty) {
                 Navigator.of(ctx).pop();
                 final created = await _apiService.addSavedLocation(
-                    _apiService.defaultUserId, name, lat, lon);
+                  _apiService.defaultUserId,
+                  name,
+                  lat,
+                  lon,
+                );
                 if (created != null && mounted) {
                   _loadSavedLocations();
                 }
@@ -127,7 +149,10 @@ class _MapsScreenState extends State<MapsScreen> {
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            child: const Text('SAVE', style: TextStyle(fontWeight: FontWeight.w700)),
+            child: const Text(
+              'SAVE',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
           ),
         ],
       ),
@@ -168,7 +193,10 @@ class _MapsScreenState extends State<MapsScreen> {
 
                 // Search Bar
                 GlassmorphicContainer(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
                   borderRadius: 24,
                   backgroundColor: Colors.white.withValues(alpha: 0.05),
                   borderColor: Colors.white.withValues(alpha: 0.09),
@@ -374,7 +402,11 @@ class _MapsScreenState extends State<MapsScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white70, size: 20),
+                      icon: const Icon(
+                        Icons.add,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       onPressed: _showAddLocationDialog,

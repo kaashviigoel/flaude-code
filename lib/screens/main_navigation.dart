@@ -54,10 +54,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             stops: [0.0, 0.55, 1.0],
           ),
         ),
-        child: IndexedStack(
-          index: _currentIndex,
-          children: screens,
-        ),
+        child: IndexedStack(index: _currentIndex, children: screens),
       ),
       bottomNavigationBar: MausamBottomNavBar(
         currentIndex: _currentIndex,

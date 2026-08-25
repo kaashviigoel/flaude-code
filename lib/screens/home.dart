@@ -7,10 +7,7 @@ import 'package:mausam/widgets/glassmorphic_container.dart';
 class HomeScreen extends StatefulWidget {
   final String? selectedMode;
 
-  const HomeScreen({
-    super.key,
-    this.selectedMode,
-  });
+  const HomeScreen({super.key, this.selectedMode});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,9 +24,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadWeatherData() async {
+    final position = await _apiService.currentPosition();
     final data = await _apiService.fetchDashboard(
-      lat: 40.7128,
-      lon: -74.0060,
+      lat: position.latitude,
+      lon: position.longitude,
       persona: widget.selectedMode ?? 'commuter',
     );
     if (mounted) {
@@ -44,9 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final current = _dashboardData?.current;
     final forecast = _dashboardData?.forecast;
 
-    final temp = current?.temperatureC?.round() ?? 28;
-    final condition = current?.weatherDescription ?? 'Partly Cloudy';
-    final locationName = _dashboardData?.location.name ?? 'New York City';
+    final temp = current?.temperatureC?.round();
+    final condition = current?.weatherDescription ?? 'Weather unavailable';
+    final locationName = _dashboardData?.location.name ?? 'Current location';
     final dateStr = DateFormat('EEEE, d MMM').format(DateTime.now());
 
     return Scaffold(
@@ -197,28 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildHourlyStrip(List<ForecastPeriod>? hourly) {
     final list = hourly != null && hourly.isNotEmpty
         ? hourly.take(6).toList()
-        : [
-            ForecastPeriod(
-              startsAt: DateTime.now(),
-              temperatureC: 28,
-              weatherDescription: 'Partly Cloudy',
-            ),
-            ForecastPeriod(
-              startsAt: DateTime.now().add(const Duration(hours: 1)),
-              temperatureC: 29,
-              weatherDescription: 'Cloudy',
-            ),
-            ForecastPeriod(
-              startsAt: DateTime.now().add(const Duration(hours: 2)),
-              temperatureC: 30,
-              weatherDescription: 'Sunny',
-            ),
-            ForecastPeriod(
-              startsAt: DateTime.now().add(const Duration(hours: 3)),
-              temperatureC: 32,
-              weatherDescription: 'Sunny',
-            ),
-          ];
+        : const <ForecastPeriod>[];
 
     return SizedBox(
       height: 110,
@@ -232,9 +209,9 @@ class _HomeScreenState extends State<HomeScreen> {
           final timeStr = index == 0
               ? 'Now'
               : (item.startsAt != null
-                  ? DateFormat('HH:mm').format(item.startsAt!)
-                  : '${14 + index}:00');
-          final t = item.temperatureC?.round() ?? (28 + index);
+                    ? DateFormat('HH:mm').format(item.startsAt!)
+                    : '${14 + index}:00');
+          final t = item.temperatureC?.round();
 
           return GlassmorphicContainer(
             width: 78,
@@ -255,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 _getWeatherIcon(item.weatherDescription ?? 'Sunny', size: 22),
                 Text(
-                  '$t°',
+                  t == null ? '--' : '$t°',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -357,10 +334,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF67B7D1),
-                                Color(0xFFFFCD00),
-                              ],
+                              colors: [Color(0xFF67B7D1), Color(0xFFFFCD00)],
                             ),
                           ),
                         ),
@@ -395,13 +369,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     if (lower.contains('cloud') && lower.contains('sun') ||
         lower.contains('partly')) {
-      return Icon(Icons.wb_cloudy_outlined,
-          color: const Color(0xFFFFCD00), size: size);
+      return Icon(
+        Icons.wb_cloudy_outlined,
+        color: const Color(0xFFFFCD00),
+        size: size,
+      );
     }
     if (lower.contains('cloud')) {
       return Icon(Icons.cloud_outlined, color: Colors.white70, size: size);
     }
-    return Icon(Icons.wb_sunny_outlined,
-        color: const Color(0xFFFFCD00), size: size);
+    return Icon(
+      Icons.wb_sunny_outlined,
+      color: const Color(0xFFFFCD00),
+      size: size,
+    );
   }
 }

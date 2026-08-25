@@ -1,9 +1,4 @@
-enum AppPersona {
-  health,
-  fitness,
-  traveller,
-  commuter,
-}
+enum AppPersona { health, fitness, traveller, commuter }
 
 class PersonalizationEngine {
   static AppPersona fromString(String? persona) {

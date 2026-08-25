@@ -18,10 +18,10 @@ class UserPreferences {
   }
 
   Map<String, dynamic> toJson() => {
-        'persona': persona,
-        'temperature_unit': temperatureUnit,
-        'notifications_enabled': notificationsEnabled,
-      };
+    'persona': persona,
+    'temperature_unit': temperatureUnit,
+    'notifications_enabled': notificationsEnabled,
+  };
 }
 
 class SavedLocationModel {
@@ -64,10 +64,10 @@ class SavedLocationModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'latitude': latitude,
-        'longitude': longitude,
-      };
+    'name': name,
+    'latitude': latitude,
+    'longitude': longitude,
+  };
 }
 
 class TripModel {

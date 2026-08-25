@@ -16,11 +16,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
   final List<Map<String, dynamic>> modes = [
     {'id': 'HEALTH', 'label': 'HEALTH', 'icon': Icons.favorite_border},
     {'id': 'FITNESS', 'label': 'FITNESS', 'icon': Icons.directions_run},
-    {
-      'id': 'BEACH',
-      'label': 'BEACH & SURF',
-      'icon': Icons.waves,
-    },
+    {'id': 'BEACH', 'label': 'BEACH & SURF', 'icon': Icons.waves},
     {'id': 'TRAVEL', 'label': 'TRAVEL', 'icon': Icons.flight},
     {'id': 'FAMILY', 'label': 'FAMILY', 'icon': Icons.people_outline},
     {

@@ -52,11 +52,7 @@ class AlertCardWidget extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    severityIcon,
-                    color: severityColor,
-                    size: 16,
-                  ),
+                  Icon(severityIcon, color: severityColor, size: 16),
                   const SizedBox(width: 6),
                   Text(
                     badgeText,
