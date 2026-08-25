@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mausam/screens/onboarding.dart';
 
 void main() {
   runApp(const MausamApp());
@@ -17,7 +18,7 @@ class MausamApp extends StatelessWidget {
         fontFamily: 'Outfit',
         scaffoldBackgroundColor: const Color(0xFFF4F5F2),
       ),
-      home: const PersonaSelectionScreen(),
+      home: const OnboardingScreen(),
     );
   }
 }
