@@ -1,0 +1,21 @@
+{
+  "lat": 13.08,
+  "lon": 80.27,
+  "current": {
+    "dt": 1700000000,
+    "temp": 30.0,
+    "feels_like": 33.0,
+    "pressure": 1005,
+    "humidity": 75,
+    "visibility": 8000,
+    "wind_speed": 4.0,
+    "wind_deg": 180,
+    "uvi": 8.0,
+    "rain": {"1h": 2.4},
+    "weather": [{"id": 500, "description": "light rain"}]
+  },
+  "hourly": [{"dt": 1700003600, "temp": 29.0, "feels_like": 31.0, "pop": 0.8, "wind_speed": 5.0, "weather": [{"id": 501, "description": "moderate rain"}]}],
+  "daily": [{"dt": 1700000000, "temp": {"day": 30.0, "min": 25.0, "max": 32.0}, "humidity": 70, "pop": 0.6, "weather": [{"id": 501, "description": "moderate rain"}]}],
+  "alerts": [{"sender_name": "OpenWeather", "event": "Heavy rain", "start": 1700000000, "end": 1700040000, "description": "Rain expected."}]
+}
+
