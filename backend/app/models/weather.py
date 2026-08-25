@@ -74,4 +74,6 @@ class DashboardResponse(BaseModel):
     persona: str
     source: str = "OpenWeather"
     fetched_at: datetime
-
+    data_status: str = "fresh"
+    data_warning: str | None = None
+    recommendations: list[str] = Field(default_factory=list)

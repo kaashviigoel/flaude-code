@@ -39,3 +39,25 @@ def rank_cards(current: WeatherNow, forecast: WeatherForecast, alerts: list[Weat
         WeatherCard(card_id="travel_risk", title="Travel risk", priority=_clamp(max(values["alerts"] * weights.get("alerts", 0.0), values["visibility"] * weights.get("visibility", 0.0))), visible=bool(alerts) or visibility > 0.1, reason="Alerts and visibility affect travel", data={"alert_count": len(alerts), "visibility_m": current.visibility_m}),
     ]
     return sorted(cards, key=lambda card: card.priority, reverse=True)
+
+
+def build_recommendations(current: WeatherNow, forecast: WeatherForecast, alerts: list[WeatherAlert], persona: Persona) -> list[str]:
+    rain = max((item.precipitation_probability or 0 for item in forecast.hourly[:6]), default=0.0)
+    recommendations: list[str] = []
+    if alerts:
+        recommendations.append("Review active weather alerts before making plans.")
+    if rain >= 0.6:
+        recommendations.append("Carry rain protection and allow extra travel time.")
+    if (current.uv_index or 0) >= 6:
+        recommendations.append("Use sun protection during daytime outdoor activity.")
+    if (current.temperature_c or 0) >= 35:
+        recommendations.append("Avoid strenuous outdoor activity during the hottest hours.")
+    if persona == Persona.FITNESS and rain < 0.4 and (current.temperature_c or 0) < 32:
+        recommendations.append("Conditions are suitable for a moderate outdoor workout.")
+    if persona == Persona.COMMUTER and (current.visibility_m or 10000) < 5000:
+        recommendations.append("Reduce speed and use extra caution because visibility is low.")
+    if persona == Persona.TRAVELLER:
+        recommendations.append("Check the destination forecast before departing.")
+    if persona == Persona.HEALTH and (current.humidity_pct or 0) >= 80:
+        recommendations.append("Stay hydrated and take breaks in the humid conditions.")
+    return recommendations[:5]
