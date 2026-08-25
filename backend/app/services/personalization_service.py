@@ -33,10 +33,9 @@ def rank_cards(current: WeatherNow, forecast: WeatherForecast, alerts: list[Weat
     values = {"rain": rain, "heat": heat, "uv": uv, "wind": wind, "visibility": visibility, "alerts": alert_score, "humidity": _clamp(((current.humidity_pct or 50) - 50) / 50)}
     cards = [
         WeatherCard(card_id="weather_summary", title="Current weather", priority=0.5, visible=True, reason="Baseline conditions", data={"temperature_c": current.temperature_c}),
-        WeatherCard(card_id="rain_alert", title="Rain outlook", priority=_clamp(values["rain"] * weights["rain"]), visible=rain > 0.1, reason="Near-term precipitation probability", data={"probability": rain}),
-        WeatherCard(card_id="heat_alert", title="Heat awareness", priority=_clamp(values["heat"] * weights["heat"]), visible=heat > 0.15, reason="Current temperature relative to comfort range", data={"temperature_c": current.temperature_c}),
-        WeatherCard(card_id="uv_index", title="UV index", priority=_clamp(values["uv"] * weights["uv"]), visible=current.uv_index is not None, reason="Sun exposure risk", data={"uv_index": current.uv_index}),
-        WeatherCard(card_id="travel_risk", title="Travel risk", priority=_clamp(max(values["alerts"] * weights["alerts"], values["visibility"] * weights["visibility"])), visible=bool(alerts) or visibility > 0.1, reason="Alerts and visibility affect travel", data={"alert_count": len(alerts), "visibility_m": current.visibility_m}),
+        WeatherCard(card_id="rain_alert", title="Rain outlook", priority=_clamp(values["rain"] * weights.get("rain", 0.0)), visible=rain > 0.1, reason="Near-term precipitation probability", data={"probability": rain}),
+        WeatherCard(card_id="heat_alert", title="Heat awareness", priority=_clamp(values["heat"] * weights.get("heat", 0.0)), visible=heat > 0.15, reason="Current temperature relative to comfort range", data={"temperature_c": current.temperature_c}),
+        WeatherCard(card_id="uv_index", title="UV index", priority=_clamp(values["uv"] * weights.get("uv", 0.0)), visible=current.uv_index is not None, reason="Sun exposure risk", data={"uv_index": current.uv_index}),
+        WeatherCard(card_id="travel_risk", title="Travel risk", priority=_clamp(max(values["alerts"] * weights.get("alerts", 0.0), values["visibility"] * weights.get("visibility", 0.0))), visible=bool(alerts) or visibility > 0.1, reason="Alerts and visibility affect travel", data={"alert_count": len(alerts), "visibility_m": current.visibility_m}),
     ]
     return sorted(cards, key=lambda card: card.priority, reverse=True)
-
