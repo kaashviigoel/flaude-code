@@ -99,10 +99,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             vertical: 32,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.03),
+                            color: Colors.white.withValues(alpha: 0.03),
                             borderRadius: BorderRadius.circular(28),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.08),
+                              color: Colors.white.withValues(alpha: 0.08),
                               width: 1,
                             ),
                           ),
@@ -126,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                     : 'Sign up to personalize and save your weather preferences.',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.white.withOpacity(0.55),
+                                  color: Colors.white.withValues(alpha: 0.55),
                                   height: 1.4,
                                 ),
                               ),
@@ -248,7 +248,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         Text(
                           isSignIn ? "Don't have an account? " : "Already have an account? ",
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
+                            color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 14,
                           ),
                         ),
@@ -310,18 +310,18 @@ class _SignInScreenState extends State<SignInScreen> {
           style: const TextStyle(color: Colors.white, fontSize: 15),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 14),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 14),
             prefixIcon: Icon(icon, color: Colors.white38, size: 20),
             filled: true,
-            fillColor: Colors.white.withOpacity(0.04),
+            fillColor: Colors.white.withValues(alpha: 0.04),
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

@@ -70,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                             'Tuesday, Aug 25',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.white.withOpacity(0.4),
+                              color: Colors.white.withValues(alpha: 0.4),
                             ),
                           ),
                         ],
@@ -84,10 +84,10 @@ class HomeScreen extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: accentColor.withOpacity(0.12),
+                            color: accentColor.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                              color: accentColor.withOpacity(0.3),
+                              color: accentColor.withValues(alpha: 0.3),
                               width: 1,
                             ),
                           ),
@@ -155,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                           'H: 76°  L: 55°',
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                           ),
                         ),
                       ],
@@ -172,10 +172,10 @@ class HomeScreen extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.04),
+                          color: Colors.white.withValues(alpha: 0.04),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.08),
+                            color: Colors.white.withValues(alpha: 0.08),
                             width: 1,
                           ),
                         ),
@@ -187,7 +187,7 @@ class HomeScreen extends StatelessWidget {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: accentColor.withOpacity(0.1),
+                                    color: accentColor.withValues(alpha: 0.1),
                                     shape: BoxShape.circle,
                                   ),
                                   child: Icon(
@@ -211,7 +211,7 @@ class HomeScreen extends StatelessWidget {
                             Text(
                               modeData['description'] as String,
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                                 fontSize: 13,
                                 height: 1.4,
                               ),
@@ -247,7 +247,7 @@ class HomeScreen extends StatelessWidget {
                                       child: Text(
                                         tip,
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.65),
+                                          color: Colors.white.withValues(alpha: 0.65),
                                           fontSize: 12,
                                         ),
                                       ),
@@ -313,10 +313,10 @@ class HomeScreen extends StatelessWidget {
                         return Container(
                           width: 76,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.02),
+                            color: Colors.white.withValues(alpha: 0.02),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: Colors.white.withOpacity(0.04),
+                              color: Colors.white.withValues(alpha: 0.04),
                             ),
                           ),
                           child: Column(
