@@ -1,6 +1,24 @@
-# mausam
+# MausamSense
 
-A new Flutter project.
+Context-aware weather personalization for the Mausam mobile application.
+
+The repository contains the Flutter client and an OpenWeather-backed FastAPI service. Backend documentation starts at [`backend/README.md`](backend/README.md).
+
+## Project areas
+
+- `lib/`: Flutter application
+- `backend/`: FastAPI API, normalization, resilience, personalization, and PostgreSQL persistence
+- `backend/docs/`: architecture, API contract, scoring, operations, and Postman guides
+
+## Backend quick start
+
+```powershell
+cd backend
+.\.venv\Scripts\Activate.ps1
+uvicorn app.main:app --reload
+```
+
+Open the API documentation at `http://127.0.0.1:8000/docs`.
 
 ## Getting Started
 
