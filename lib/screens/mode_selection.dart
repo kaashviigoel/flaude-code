@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:mausam/screens/home.dart';
 
@@ -119,7 +118,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.55),
+                    color: Colors.white.withValues(alpha: 0.55),
                     height: 1.4,
                   ),
                 ),
@@ -156,13 +155,13 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                               height: double.infinity,
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? Colors.white.withOpacity(0.06)
-                                    : Colors.white.withOpacity(0.03),
+                                    ? Colors.white.withValues(alpha: 0.06)
+                                    : Colors.white.withValues(alpha: 0.03),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: isSelected
                                       ? accentColor
-                                      : Colors.white.withOpacity(0.08),
+                                      : Colors.white.withValues(alpha: 0.08),
                                   width: isSelected ? 1.5 : 1.0,
                                 ),
                               ),
@@ -234,7 +233,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 2.0,
-                          color: Colors.white.withOpacity(0.6),
+                          color: Colors.white.withValues(alpha: 0.6),
                         ),
                       ),
                     ),
@@ -246,13 +245,13 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                       child: ElevatedButton(
                         onPressed: _handleContinue,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.08),
+                          backgroundColor: Colors.white.withValues(alpha: 0.08),
                           foregroundColor: Colors.white,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(26),
                             side: BorderSide(
-                              color: Colors.white.withOpacity(0.12),
+                              color: Colors.white.withValues(alpha: 0.12),
                               width: 1,
                             ),
                           ),

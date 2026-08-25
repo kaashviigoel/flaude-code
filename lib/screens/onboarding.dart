@@ -32,7 +32,7 @@ class OnboardingScreen extends StatelessWidget {
                 // Header App Name
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
-                  const Text(
+                  child: Text(
                     'MAUSAM',
                     style: TextStyle(
                       fontSize: 26,
@@ -54,10 +54,10 @@ class OnboardingScreen extends StatelessWidget {
                         vertical: 36,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.04),
+                        color: Colors.white.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                           width: 1,
                         ),
                       ),
@@ -81,7 +81,7 @@ class OnboardingScreen extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.white.withOpacity(0.6),
+                              color: Colors.white.withValues(alpha: 0.6),
                               height: 1.5,
                             ),
                           ),
@@ -110,7 +110,7 @@ class OnboardingScreen extends StatelessWidget {
                               },
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
-                                  color: Colors.white.withOpacity(0.25),
+                                  color: Colors.white.withValues(alpha: 0.25),
                                   width: 1.2,
                                 ),
                                 shape: RoundedRectangleBorder(
