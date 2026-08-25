@@ -10,7 +10,7 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool isSignIn = true; // Toggle between Sign In and Sign Up
+  bool isSignIn = true;
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
@@ -29,7 +29,6 @@ class _SignInScreenState extends State<SignInScreen> {
 
   void _handleSubmit() {
     if (_formKey.currentState!.validate()) {
-      // Simulate successful sign in/up and navigate to Mode Selection Screen
       Navigator.of(context).push(
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
@@ -45,9 +44,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFFFCD00); // Premium Gold Accent
+    final accentColor = const Color(0xFFFFCD00);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -55,16 +55,13 @@ class _SignInScreenState extends State<SignInScreen> {
           gradient: RadialGradient(
             center: Alignment.center,
             radius: 1.3,
-            colors: [
-              Color(0xFF1E3354), // Deep indigo/blue glow
-              Color(0xFF0F1B2C), // Very dark navy
-              Color(0xFF070B12), // Premium dark gray-black
-            ],
+            colors: [Color(0xFF1E3354), Color(0xFF0F1B2C), Color(0xFF070B12)],
             stops: [0.0, 0.55, 1.0],
           ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
               child: Form(
@@ -85,7 +82,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // Glassmorphic Card containing Form
                     ClipRRect(
                       borderRadius: BorderRadius.circular(28),
                       child: BackdropFilter(
@@ -106,7 +102,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Form Title
                               Text(
                                 isSignIn ? 'Welcome Back' : 'Create Account',
                                 style: const TextStyle(
@@ -129,7 +124,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               const SizedBox(height: 32),
 
-                              // Full Name Field (Sign Up Only)
                               if (!isSignIn) ...[
                                 _buildTextField(
                                   controller: _nameController,
@@ -147,7 +141,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                 const SizedBox(height: 20),
                               ],
 
-                              // Email Field
                               _buildTextField(
                                 controller: _emailController,
                                 label: 'Email Address',
@@ -169,7 +162,6 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               const SizedBox(height: 20),
 
-                              // Password Field
                               _buildTextField(
                                 controller: _passwordController,
                                 label: 'Password',
@@ -188,12 +180,133 @@ class _SignInScreenState extends State<SignInScreen> {
                                 },
                               ),
 
-                              // Forgot Password (Sign In Only)
                               if (isSignIn) ...[
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      final emailController =
+                                          TextEditingController();
+
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            backgroundColor: const Color(
+                                              0xFF101820,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(24),
+                                            ),
+                                            title: const Text(
+                                              'Forgot Password?',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            content: TextField(
+                                              controller: emailController,
+                                              keyboardType:
+                                                  TextInputType.emailAddress,
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                              decoration: InputDecoration(
+                                                labelText: 'Email Address',
+                                                hintText: 'Enter your email',
+                                                labelStyle: const TextStyle(
+                                                  color: Colors.white70,
+                                                ),
+                                                hintStyle: TextStyle(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.3),
+                                                ),
+                                                prefixIcon: const Icon(
+                                                  Icons.email_outlined,
+                                                  color: Colors.white38,
+                                                ),
+                                                filled: true,
+                                                fillColor: Colors.white
+                                                    .withValues(alpha: 0.05),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  borderSide: BorderSide.none,
+                                                ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            14,
+                                                          ),
+                                                      borderSide:
+                                                          const BorderSide(
+                                                            color: Color(
+                                                              0xFFFFCD00,
+                                                            ),
+                                                            width: 1.5,
+                                                          ),
+                                                    ),
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text(
+                                                  'CANCEL',
+                                                  style: TextStyle(
+                                                    color: Colors.white54,
+                                                    letterSpacing: 1.2,
+                                                  ),
+                                                ),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                        'Password reset link sent to your email.',
+                                                      ),
+                                                      backgroundColor: Color(
+                                                        0xFF101820,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color(
+                                                    0xFFFFCD00,
+                                                  ),
+                                                  foregroundColor: Colors.black,
+                                                  elevation: 0,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: const Text(
+                                                  'SEND LINK',
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                    letterSpacing: 1.2,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
                                     child: Text(
                                       'Forgot Password?',
                                       style: TextStyle(
@@ -208,7 +321,6 @@ class _SignInScreenState extends State<SignInScreen> {
                                 const SizedBox(height: 24),
                               ],
 
-                              // Submit Button
                               const SizedBox(height: 12),
                               SizedBox(
                                 width: double.infinity,
@@ -240,7 +352,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Toggle Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

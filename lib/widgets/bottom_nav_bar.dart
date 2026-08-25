@@ -14,54 +14,49 @@ class MausamBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 12),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              height: 64,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF0F1A2A).withValues(alpha: 0.75),
-                borderRadius: BorderRadius.circular(36),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.15),
-                  width: 1.2,
+      top: false,
+      minimum: const EdgeInsets.only(left: 20, right: 20, bottom: 10),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(36),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: Container(
+            height: 64,
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F1A2A).withValues(alpha: 0.75),
+              borderRadius: BorderRadius.circular(36),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.15),
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.35),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.35),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(0, Icons.home_outlined, Icons.home, 'HOME'),
-                  _buildNavItem(
-                    1,
-                    Icons.notifications_none_rounded,
-                    Icons.notifications_rounded,
-                    'ALERTS',
-                  ),
-                  _buildNavItem(
-                    2,
-                    Icons.map_outlined,
-                    Icons.map_rounded,
-                    'MAPS',
-                  ),
-                  _buildNavItem(
-                    3,
-                    Icons.person_outline_rounded,
-                    Icons.person_rounded,
-                    'PERSONA',
-                  ),
-                ],
-              ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildNavItem(0, Icons.home_outlined, Icons.home, 'HOME'),
+                _buildNavItem(
+                  1,
+                  Icons.notifications_none_rounded,
+                  Icons.notifications_rounded,
+                  'ALERTS',
+                ),
+                _buildNavItem(2, Icons.map_outlined, Icons.map_rounded, 'MAPS'),
+                _buildNavItem(
+                  3,
+                  Icons.person_outline_rounded,
+                  Icons.person_rounded,
+                  'PERSONA',
+                ),
+              ],
             ),
           ),
         ),
@@ -75,14 +70,15 @@ class MausamBottomNavBar extends StatelessWidget {
     IconData selectedIcon,
     String label,
   ) {
-    final isSelected = currentIndex == index;
+    final bool isSelected = currentIndex == index;
 
     return GestureDetector(
       onTap: () => onTabSelected(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        margin: const EdgeInsets.symmetric(vertical: 2),
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.white.withValues(alpha: 0.12)
@@ -96,17 +92,19 @@ class MausamBottomNavBar extends StatelessWidget {
               : null,
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isSelected ? selectedIcon : unselectedIcon,
               color: isSelected ? Colors.white : Colors.white54,
               size: 20,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.clip,
               style: TextStyle(
                 fontSize: 9,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
