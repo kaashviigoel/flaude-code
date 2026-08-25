@@ -66,6 +66,14 @@ PostgreSQL stores personalization and saved coordinates:
 
 Create the tables with your migration tool or the SQLAlchemy metadata during local development. Authentication is intentionally deferred for the hackathon MVP; `user_id` is currently supplied by the client.
 
+For local development, start PostgreSQL, set `DATABASE_URL`, and run:
+
+```powershell
+python -m app.db.init_db
+```
+
+The initializer is for development only. Use Alembic migrations before production deployment.
+
 ## Postman smoke test
 
 With the server running, call `GET http://127.0.0.1:8000/api/weather/dashboard?lat=13.08&lon=80.27&persona=commuter`. Confirm the response contains `location`, `current`, `forecast`, `alerts`, `cards`, `persona`, `source`, and `fetched_at`.
