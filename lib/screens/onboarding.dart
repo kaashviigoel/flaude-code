@@ -15,11 +15,7 @@ class OnboardingScreen extends StatelessWidget {
           gradient: RadialGradient(
             center: Alignment.center,
             radius: 1.3,
-            colors: [
-              Color(0xFF1E3354), // Deep indigo/blue glow
-              Color(0xFF0F1B2C), // Very dark navy
-              Color(0xFF070B12), // Premium dark gray-black
-            ],
+            colors: [Color(0xFF1E3354), Color(0xFF0F1B2C), Color(0xFF070B12)],
             stops: [0.0, 0.55, 1.0],
           ),
         ),
@@ -29,10 +25,9 @@ class OnboardingScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Header App Name
                 const Padding(
                   padding: EdgeInsets.only(top: 20),
-                  const Text(
+                  child: Text(
                     'MAUSAM',
                     style: TextStyle(
                       fontSize: 26,
@@ -86,7 +81,7 @@ class OnboardingScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 36),
-                          
+
                           // Outlined Continue Button
                           SizedBox(
                             width: double.infinity,
@@ -95,16 +90,27 @@ class OnboardingScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const SignInScreen(),
+                                    pageBuilder:
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                        ) => const SignInScreen(),
                                     transitionsBuilder:
-                                        (context, animation, secondaryAnimation, child) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      );
-                                    },
-                                    transitionDuration: const Duration(milliseconds: 500),
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                          child,
+                                        ) {
+                                          return FadeTransition(
+                                            opacity: animation,
+                                            child: child,
+                                          );
+                                        },
+                                    transitionDuration: const Duration(
+                                      milliseconds: 500,
+                                    ),
                                   ),
                                 );
                               },
