@@ -86,7 +86,7 @@ class OnboardingScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 36),
-                          
+
                           // Outlined Continue Button
                           SizedBox(
                             width: double.infinity,
@@ -95,16 +95,27 @@ class OnboardingScreen extends StatelessWidget {
                               onPressed: () {
                                 Navigator.of(context).push(
                                   PageRouteBuilder(
-                                    pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const SignInScreen(),
+                                    pageBuilder:
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                        ) => const SignInScreen(),
                                     transitionsBuilder:
-                                        (context, animation, secondaryAnimation, child) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: child,
-                                      );
-                                    },
-                                    transitionDuration: const Duration(milliseconds: 500),
+                                        (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                          child,
+                                        ) {
+                                          return FadeTransition(
+                                            opacity: animation,
+                                            child: child,
+                                          );
+                                        },
+                                    transitionDuration: const Duration(
+                                      milliseconds: 500,
+                                    ),
                                   ),
                                 );
                               },

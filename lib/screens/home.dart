@@ -1,7 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:mausam/models/weather.dart';
+import 'package:mausam/services/weather_api.dart';
+import 'package:mausam/widgets/glassmorphic_container.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String? selectedMode;
 
   const HomeScreen({
@@ -10,348 +13,180 @@ class HomeScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final accentColor = const Color(0xFFFFCD00); // Gold Accent
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
-    // Dynamic advice based on user's selected mode
-    final modeData = _getModeAdvisory(selectedMode ?? 'GENERAL');
+class _HomeScreenState extends State<HomeScreen> {
+  final WeatherApiService _apiService = WeatherApiService();
+  DashboardResponse? _dashboardData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWeatherData();
+  }
+
+  Future<void> _loadWeatherData() async {
+    final data = await _apiService.fetchDashboard(
+      lat: 40.7128,
+      lon: -74.0060,
+      persona: widget.selectedMode ?? 'commuter',
+    );
+    if (mounted) {
+      setState(() {
+        _dashboardData = data;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final current = _dashboardData?.current;
+    final forecast = _dashboardData?.forecast;
+
+    final temp = current?.temperatureC?.round() ?? 28;
+    final condition = current?.weatherDescription ?? 'Partly Cloudy';
+    final locationName = _dashboardData?.location.name ?? 'New York City';
+    final dateStr = DateFormat('EEEE, d MMM').format(DateTime.now());
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.center,
-            radius: 1.3,
-            colors: [
-              Color(0xFF1E3354), // Deep indigo/blue glow
-              Color(0xFF0F1B2C), // Very dark navy
-              Color(0xFF070B12), // Premium dark gray-black
-            ],
-            stops: [0.0, 0.55, 1.0],
-          ),
-        ),
-        child: SafeArea(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          onRefresh: _loadWeatherData,
+          color: const Color(0xFFFFCD00),
           child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // App Bar / Top Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Top Brand Title
+                const Center(
+                  child: Text(
+                    'MAUSAM',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 8.0,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Main Hero Weather Card
+                GlassmorphicContainer(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 28,
+                  ),
+                  borderRadius: 28,
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
+                  borderColor: Colors.white.withValues(alpha: 0.09),
+                  child: Column(
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Text(
+                        locationName,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        dateStr,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.55),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Temperature and Icon
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.location_on,
-                                color: Colors.white70,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                'San Francisco',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
+                          _getWeatherIcon(condition, size: 48),
+                          const SizedBox(width: 14),
                           Text(
-                            'Tuesday, Aug 25',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.white.withValues(alpha: 0.4),
+                            '$temp°',
+                            style: const TextStyle(
+                              fontSize: 64,
+                              fontWeight: FontWeight.w300,
+                              color: Colors.white,
+                              height: 1.0,
                             ),
                           ),
                         ],
                       ),
-                      
-                      // Selected Mode Badge
-                      if (selectedMode != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: accentColor.withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                modeData['icon'] as IconData,
-                                color: accentColor,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                selectedMode!,
-                                style: TextStyle(
-                                  color: accentColor,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                  
-                  const SizedBox(height: 36),
 
-                  // Hero Temp Section
-                  Center(
-                    child: Column(
-                      children: [
-                        Image.network(
-                          'https://images.unsplash.com/photo-1592217643561-2e386e915a2d?auto=format&fit=crop&w=150&q=80',
-                          width: 80,
-                          height: 80,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
-                            Icons.wb_sunny_outlined,
-                            size: 72,
-                            color: Colors.orangeAccent,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const Text(
-                          '72°',
-                          style: TextStyle(
-                            fontSize: 76,
-                            fontWeight: FontWeight.w200,
-                            color: Colors.white,
-                            height: 1.0,
-                          ),
-                        ),
-                        const Text(
-                          'PARTLY CLOUDY',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 2.0,
-                            color: Colors.white70,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'H: 76°  L: 55°',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.white.withValues(alpha: 0.4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      const SizedBox(height: 14),
 
-                  const SizedBox(height: 36),
-
-                  // Dynamic Adaptive Advisory Card (Glassmorphic)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.04),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.08),
-                            width: 1,
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: accentColor.withValues(alpha: 0.1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    modeData['icon'] as IconData,
-                                    color: accentColor,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  modeData['title'] as String,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 14),
-                            Text(
-                              modeData['description'] as String,
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.85),
-                                fontSize: 13,
-                                height: 1.4,
-                              ),
-                            ),
-                            const Divider(
-                              color: Colors.white10,
-                              height: 24,
-                            ),
-                            const Text(
-                              'RECOMMENDATIONS',
-                              style: TextStyle(
-                                color: Colors.white38,
-                                fontSize: 9,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ...(modeData['tips'] as List<String>).map(
-                              (tip) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '• ',
-                                      style: TextStyle(
-                                        color: accentColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        tip,
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.65),
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Hourly Forecast Section (Header)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Hourly Forecast',
-                        style: TextStyle(
+                      // Condition description
+                      Text(
+                        condition,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
                           color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'More details',
-                          style: TextStyle(
-                            color: accentColor,
-                            fontSize: 12,
-                          ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'H: 32°   L: 18°',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.55),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                ),
 
-                  // Horizontal Forecast list
-                  SizedBox(
-                    height: 100,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: 6,
-                      separatorBuilder: (context, index) => const SizedBox(width: 14),
-                      itemBuilder: (context, index) {
-                        final hours = ['Now', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM'];
-                        final temps = ['72°', '74°', '75°', '73°', '71°', '68°'];
-                        final icons = [
-                          Icons.wb_cloudy_outlined,
-                          Icons.wb_sunny_outlined,
-                          Icons.wb_sunny_outlined,
-                          Icons.wb_sunny_outlined,
-                          Icons.wb_cloudy_outlined,
-                          Icons.wb_cloudy_outlined
-                        ];
+                const SizedBox(height: 28),
 
-                        return Container(
-                          width: 76,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.02),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.04),
-                            ),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                hours[index],
-                                style: const TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: 11,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Icon(
-                                icons[index],
-                                color: accentColor,
-                                size: 18,
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                temps[index],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                // Hourly Forecast Header
+                Text(
+                  'HOURLY FORECAST',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.6,
+                    color: Colors.white.withValues(alpha: 0.55),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Hourly Forecast Cards Row
+                _buildHourlyStrip(forecast?.hourly),
+
+                const SizedBox(height: 28),
+
+                // 7-Day Outlook Header
+                Text(
+                  '7-DAY OUTLOOK',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.6,
+                    color: Colors.white.withValues(alpha: 0.55),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 7-Day Outlook Card
+                _buildDailyOutlook(forecast?.daily),
+              ],
             ),
           ),
         ),
@@ -359,107 +194,214 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Map<String, dynamic> _getModeAdvisory(String mode) {
-    switch (mode) {
-      case 'FITNESS':
-        return {
-          'title': 'Fitness Advisory',
-          'icon': Icons.directions_run,
-          'description': 'Ideal conditions for running and cycling. The UV index is moderate and humidity is at 42%. Wind speed is calm.',
-          'tips': [
-            'Optimal running temperature (between 50°F and 72°F).',
-            'Wear sunscreen with SPF 30+ for outdoor workouts.',
-            'Hydrate: Drink at least 8oz of water before starting.',
-          ],
-        };
-      case 'HEALTH':
-        return {
-          'title': 'Health & Wellbeing Advisory',
-          'icon': Icons.favorite_border,
-          'description': 'Air Quality Index is Excellent (AQI 24). Grass pollen levels are low. Temperature is very comfortable for joint health.',
-          'tips': [
-            'Great day to air out the house and get fresh oxygen circulation.',
-            'Perfect conditions for outdoor meditation or yoga.',
-            'Low pollen levels: safe for asthma or allergy sufferers.',
-          ],
-        };
-      case 'BEACH':
-        return {
-          'title': 'Beach & Surf Advisory',
-          'icon': Icons.waves,
-          'description': 'Warm air temp with a cool water temperature of 62°F. Wave height is 2-4 feet with slight chop.',
-          'tips': [
-            'Moderate rip current risk: swim near a lifeguard.',
-            'UV index is high (7/10). Reapply sunscreen every 2 hours.',
-            'Low tide is at 2:45 PM; perfect for beach walks.',
-          ],
-        };
-      case 'TRAVEL':
-        return {
-          'title': 'Travel Advisory',
-          'icon': Icons.flight,
-          'description': 'Zero delays expected due to weather. Road visibility is 10 miles. Calm winds at airport terminal.',
-          'tips': [
-            'No flight delays or turbulent patterns expected.',
-            'Great driving conditions on regional highways.',
-            'Pack light layers: temperature will drop to 55°F by evening.',
-          ],
-        };
-      case 'FAMILY':
-        return {
-          'title': 'Family Day Advisory',
-          'icon': Icons.people_outline,
-          'description': 'Excellent weather for park picnics, playground activities, or backyard barbeques. High temperature of 76°F.',
-          'tips': [
-            'Pack outdoor games: light wind will not disrupt play.',
-            'Sunset is at 7:54 PM - plenty of daylight for family time.',
-            'Bring light jackets for the kids for when the sun goes down.',
-          ],
-        };
-      case 'AGRICULTURE':
-        return {
-          'title': 'Agriculture Advisory',
-          'icon': Icons.agriculture_outlined,
-          'description': 'Moderate soil moisture retention. No frost warning in the forecast. Rain probability is 0% for the next 48 hours.',
-          'tips': [
-            'Perfect conditions for harvesting and field mowing.',
-            'Irrigate crops early morning to minimize evaporation loss.',
-            'Good day for applying organic soil fertilizers.',
-          ],
-        };
-      case 'COMMUTE':
-        return {
-          'title': 'Commuter Advisory',
-          'icon': Icons.directions_car_filled_outlined,
-          'description': 'Clear roads with normal dry traction conditions. Visibility is excellent. Expect minor solar glare during sunset.',
-          'tips': [
-            'No road hazards, surface wetness, or fog blocks.',
-            'Wear polarized sunglasses to combat sunset glare.',
-            'Good fuel efficiency conditions (steady air pressure).',
-          ],
-        };
-      case 'EVENTS':
-        return {
-          'title': 'Events Planning Advisory',
-          'icon': Icons.calendar_month_outlined,
-          'description': 'Outdoor events are highly recommended. Zero precipitation risk. Wind gust speeds are below 8 mph.',
-          'tips': [
-            'No tents or covers required for wind or rain protection.',
-            'Set up outdoor sound systems safely (humidity is low).',
-            'Excellent photo-shoot lighting conditions in late afternoon.',
-          ],
-        };
-      default:
-        return {
-          'title': 'General Weather Advisory',
-          'icon': Icons.wb_sunny_outlined,
-          'description': 'Comfortable conditions with a mixture of sun and clouds. Plan your day normally.',
-          'tips': [
-            'Keep an umbrella handy in your car just in case.',
-            'Check the local UV index map before heading out.',
-            'Enjoy the pleasant afternoon temperatures.',
-          ],
-        };
+  Widget _buildHourlyStrip(List<ForecastPeriod>? hourly) {
+    final list = hourly != null && hourly.isNotEmpty
+        ? hourly.take(6).toList()
+        : [
+            ForecastPeriod(
+              startsAt: DateTime.now(),
+              temperatureC: 28,
+              weatherDescription: 'Partly Cloudy',
+            ),
+            ForecastPeriod(
+              startsAt: DateTime.now().add(const Duration(hours: 1)),
+              temperatureC: 29,
+              weatherDescription: 'Cloudy',
+            ),
+            ForecastPeriod(
+              startsAt: DateTime.now().add(const Duration(hours: 2)),
+              temperatureC: 30,
+              weatherDescription: 'Sunny',
+            ),
+            ForecastPeriod(
+              startsAt: DateTime.now().add(const Duration(hours: 3)),
+              temperatureC: 32,
+              weatherDescription: 'Sunny',
+            ),
+          ];
+
+    return SizedBox(
+      height: 110,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        itemCount: list.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final item = list[index];
+          final timeStr = index == 0
+              ? 'Now'
+              : (item.startsAt != null
+                  ? DateFormat('HH:mm').format(item.startsAt!)
+                  : '${14 + index}:00');
+          final t = item.temperatureC?.round() ?? (28 + index);
+
+          return GlassmorphicContainer(
+            width: 78,
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+            borderRadius: 18,
+            backgroundColor: Colors.white.withValues(alpha: 0.04),
+            borderColor: Colors.white.withValues(alpha: 0.08),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  timeStr,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white.withValues(alpha: 0.7),
+                  ),
+                ),
+                _getWeatherIcon(item.weatherDescription ?? 'Sunny', size: 22),
+                Text(
+                  '$t°',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDailyOutlook(List<ForecastPeriod>? daily) {
+    final defaultDays = [
+      {'day': 'Today', 'icon': 'cloud_sun', 'pop': '10%', 'min': 18, 'max': 32},
+      {'day': 'Thu', 'icon': 'rain', 'pop': '80%', 'min': 16, 'max': 24},
+      {'day': 'Fri', 'icon': 'cloud', 'pop': '20%', 'min': 15, 'max': 22},
+      {'day': 'Sat', 'icon': 'sun', 'pop': '0%', 'min': 17, 'max': 29},
+      {'day': 'Sun', 'icon': 'sun', 'pop': '0%', 'min': 19, 'max': 31},
+    ];
+
+    return GlassmorphicContainer(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+      borderRadius: 24,
+      backgroundColor: Colors.white.withValues(alpha: 0.05),
+      borderColor: Colors.white.withValues(alpha: 0.09),
+      child: Column(
+        children: List.generate(defaultDays.length, (index) {
+          final item = defaultDays[index];
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              children: [
+                // Day name
+                SizedBox(
+                  width: 50,
+                  child: Text(
+                    item['day'] as String,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+
+                // Icon + Precip %
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _getWeatherIcon(item['icon'] as String, size: 18),
+                    const SizedBox(width: 4),
+                    SizedBox(
+                      width: 38,
+                      child: Text(
+                        item['pop'] as String,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.cyan.shade200,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(width: 8),
+
+                // Min temp
+                Text(
+                  '${item['min']}°',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withValues(alpha: 0.6),
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                // Temperature range bar
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Container(
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
+                      child: FractionallySizedBox(
+                        alignment: Alignment.centerLeft,
+                        widthFactor:
+                            (((item['max'] as int) - (item['min'] as int)) /
+                                    20.0)
+                                .clamp(0.2, 1.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF67B7D1),
+                                Color(0xFFFFCD00),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                // Max temp
+                Text(
+                  '${item['max']}°',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _getWeatherIcon(String condition, {double size = 24}) {
+    final lower = condition.toLowerCase();
+    if (lower.contains('rain') || lower == 'rain') {
+      return Icon(Icons.water_drop, color: const Color(0xFF4AC7F0), size: size);
     }
+    if (lower.contains('cloud') && lower.contains('sun') ||
+        lower.contains('partly')) {
+      return Icon(Icons.wb_cloudy_outlined,
+          color: const Color(0xFFFFCD00), size: size);
+    }
+    if (lower.contains('cloud')) {
+      return Icon(Icons.cloud_outlined, color: Colors.white70, size: size);
+    }
+    return Icon(Icons.wb_sunny_outlined,
+        color: const Color(0xFFFFCD00), size: size);
   }
 }

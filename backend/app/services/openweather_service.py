@@ -87,13 +87,13 @@ class OpenWeatherService:
             cached.data_status = "cached"
             cached.data_warning = None
             return cached
-        if not settings.openweather_api_key:
+        if not settings.openweather_api_key or settings.openweather_api_key == "replace-with-your-key":
             stale = weather_cache.get_stale(cache_key, settings.weather_cache_stale_seconds)
             if stale is not None:
                 stale.data_status = "stale"
                 stale.data_warning = "OpenWeather API key is not configured; showing cached data"
                 return stale
-            raise HTTPException(status_code=503, detail="OpenWeather API key is not configured")
+            raise HTTPException(status_code=503, detail="OpenWeather API key is missing or still uses the placeholder value")
         params = {"lat": lat, "lon": lon, "appid": settings.openweather_api_key, "units": "metric"}
         last_error: Exception | None = None
         for attempt in range(settings.openweather_max_retries + 1):
@@ -116,6 +116,8 @@ class OpenWeatherService:
         if isinstance(last_error, httpx.TimeoutException):
             raise HTTPException(status_code=504, detail="OpenWeather request timed out") from last_error
         if isinstance(last_error, httpx.HTTPStatusError):
+            if last_error.response.status_code == 401:
+                raise HTTPException(status_code=503, detail="OpenWeather API key is invalid or does not have access to One Call API") from last_error
             status = 429 if last_error.response.status_code == 429 else 502
             raise HTTPException(status_code=status, detail="OpenWeather request failed") from last_error
         raise HTTPException(status_code=502, detail="OpenWeather is unavailable") from last_error

@@ -35,10 +35,7 @@ class _SignInScreenState extends State<SignInScreen> {
           pageBuilder: (context, animation, secondaryAnimation) =>
               const ModeSelectionScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
           transitionDuration: const Duration(milliseconds: 500),
         ),
@@ -162,7 +159,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                   if (val == null || val.trim().isEmpty) {
                                     return 'Please enter your email';
                                   }
-                                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(val)) {
+                                  if (!RegExp(
+                                    r'^[^@]+@[^@]+\.[^@]+$',
+                                  ).hasMatch(val)) {
                                     return 'Please enter a valid email';
                                   }
                                   return null;
@@ -246,7 +245,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          isSignIn ? "Don't have an account? " : "Already have an account? ",
+                          isSignIn
+                              ? "Don't have an account? "
+                              : "Already have an account? ",
                           style: TextStyle(
                             color: Colors.white.withValues(alpha: 0.6),
                             fontSize: 14,
@@ -310,18 +311,25 @@ class _SignInScreenState extends State<SignInScreen> {
           style: const TextStyle(color: Colors.white, fontSize: 15),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 14),
+            hintStyle: TextStyle(
+              color: Colors.white.withValues(alpha: 0.3),
+              fontSize: 14,
+            ),
             prefixIcon: Icon(icon, color: Colors.white38, size: 20),
             filled: true,
             fillColor: Colors.white.withValues(alpha: 0.04),
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+              borderSide: BorderSide(
+                color: Colors.white.withValues(alpha: 0.08),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),

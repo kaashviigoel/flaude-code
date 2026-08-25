@@ -10,7 +10,10 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_async_engine(get_settings().database_url, pool_pre_ping=True)
+settings = get_settings()
+# Supabase exposes a PostgreSQL connection string, so the existing SQLAlchemy
+# persistence layer remains compatible while allowing hosted storage.
+engine = create_async_engine(settings.supabase_db_url or settings.database_url, pool_pre_ping=True)
 SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 

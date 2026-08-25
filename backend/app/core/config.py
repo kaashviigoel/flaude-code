@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     weather_cache_stale_seconds: int = 3600
     openweather_max_retries: int = 2
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/mausam"
+    supabase_db_url: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

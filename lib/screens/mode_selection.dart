@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mausam/screens/home.dart';
+import 'package:mausam/models/user_profile.dart';
+import 'package:mausam/screens/main_navigation.dart';
+import 'package:mausam/services/weather_api.dart';
 
 class ModeSelectionScreen extends StatefulWidget {
   const ModeSelectionScreen({super.key});
@@ -9,34 +11,18 @@ class ModeSelectionScreen extends StatefulWidget {
 }
 
 class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
-  String? selectedMode = 'FITNESS'; // Default selection from screenshot
+  String? selectedMode = 'HEALTH'; // Default selection matching health persona
 
   final List<Map<String, dynamic>> modes = [
-    {
-      'id': 'HEALTH',
-      'label': 'HEALTH',
-      'icon': Icons.favorite_border,
-    },
-    {
-      'id': 'FITNESS',
-      'label': 'FITNESS',
-      'icon': Icons.directions_run,
-    },
+    {'id': 'HEALTH', 'label': 'HEALTH', 'icon': Icons.favorite_border},
+    {'id': 'FITNESS', 'label': 'FITNESS', 'icon': Icons.directions_run},
     {
       'id': 'BEACH',
       'label': 'BEACH & SURF',
-      'icon': Icons.waves, // Representing beach/waves
+      'icon': Icons.waves,
     },
-    {
-      'id': 'TRAVEL',
-      'label': 'TRAVEL',
-      'icon': Icons.flight,
-    },
-    {
-      'id': 'FAMILY',
-      'label': 'FAMILY',
-      'icon': Icons.people_outline,
-    },
+    {'id': 'TRAVEL', 'label': 'TRAVEL', 'icon': Icons.flight},
+    {'id': 'FAMILY', 'label': 'FAMILY', 'icon': Icons.people_outline},
     {
       'id': 'AGRICULTURE',
       'label': 'AGRICULTURE',
@@ -47,24 +33,28 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
       'label': 'COMMUTE',
       'icon': Icons.directions_car_filled_outlined,
     },
-    {
-      'id': 'EVENTS',
-      'label': 'EVENTS',
-      'icon': Icons.calendar_month_outlined,
-    },
+    {'id': 'EVENTS', 'label': 'EVENTS', 'icon': Icons.calendar_month_outlined},
   ];
 
   void _handleContinue() {
-    // Navigate to Home Dashboard Screen
+    final persona = switch (selectedMode) {
+      'FITNESS' => 'fitness',
+      'HEALTH' => 'health',
+      'TRAVEL' => 'traveller',
+      'COMMUTE' => 'commuter',
+      _ => 'health',
+    };
+    WeatherApiService().savePreferences(
+      'demo-user',
+      UserPreferences(persona: persona),
+    );
+    // Navigate to Main Navigation Screen (4 tabs)
     Navigator.of(context).pushAndRemoveUntil(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            HomeScreen(selectedMode: selectedMode),
+            MainNavigationScreen(initialPersona: selectedMode),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
+          return FadeTransition(opacity: animation, child: child);
         },
         transitionDuration: const Duration(milliseconds: 600),
       ),
@@ -129,12 +119,13 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                   child: GridView.builder(
                     itemCount: modes.length,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 1.45,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1.45,
+                        ),
                     itemBuilder: (context, index) {
                       final mode = modes[index];
                       final isSelected = selectedMode == mode['id'];
@@ -170,7 +161,9 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                                 children: [
                                   Icon(
                                     mode['icon'],
-                                    color: isSelected ? accentColor : Colors.white70,
+                                    color: isSelected
+                                        ? accentColor
+                                        : Colors.white70,
                                     size: 28,
                                   ),
                                   const SizedBox(height: 10),
@@ -179,15 +172,19 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 10,
-                                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
                                       letterSpacing: 1.5,
-                                      color: isSelected ? Colors.white : Colors.white60,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.white60,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            
+
                             // Yellow Checkmark Badge
                             if (isSelected)
                               Positioned(
@@ -268,10 +265,7 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              size: 16,
-                            ),
+                            Icon(Icons.arrow_forward, size: 16),
                           ],
                         ),
                       ),
