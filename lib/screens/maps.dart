@@ -28,12 +28,25 @@ class _MapsScreenState extends State<MapsScreen> {
   }
 
   Future<void> _loadSavedLocations() async {
-    final locations = await _apiService.fetchSavedLocations(
-      _apiService.defaultUserId,
-    );
-    if (mounted) {
+    try {
+      final locations = await _apiService.fetchSavedLocations('demo-user');
+
+      if (!mounted) return;
+
       setState(() {
         _savedLocations = locations;
+      });
+    } catch (e, stackTrace) {
+      debugPrint('========== SAVED LOCATIONS ERROR ==========');
+      debugPrint('ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
+
+      if (!mounted) return;
+
+      // Do NOT crash the Maps screen just because
+      // saved locations are unavailable.
+      setState(() {
+        _savedLocations = [];
       });
     }
   }

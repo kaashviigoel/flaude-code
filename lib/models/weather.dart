@@ -175,7 +175,7 @@ class WeatherForecast {
 class WeatherAlert {
   final String? sender;
   final String? event;
-  final String? severity; // e.g. "critical", "warning", "advisory"
+  final String? severity;
   final DateTime? startsAt;
   final DateTime? endsAt;
   final String? description;

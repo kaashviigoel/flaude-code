@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mausam/models/user_profile.dart';
 import 'package:mausam/screens/main_navigation.dart';
 import 'package:mausam/services/weather_api.dart';
+import 'package:mausam/personalization/personalization_engine.dart';
 
 class ModeSelectionScreen extends StatefulWidget {
   const ModeSelectionScreen({super.key});
@@ -33,13 +34,9 @@ class _ModeSelectionScreenState extends State<ModeSelectionScreen> {
   ];
 
   void _handleContinue() {
-    final persona = switch (selectedMode) {
-      'FITNESS' => 'fitness',
-      'HEALTH' => 'health',
-      'TRAVEL' => 'traveller',
-      'COMMUTE' => 'commuter',
-      _ => 'health',
-    };
+    final persona = PersonalizationEngine.toBackendString(
+      PersonalizationEngine.fromString(selectedMode),
+    );
     WeatherApiService().savePreferences(
       'demo-user',
       UserPreferences(persona: persona),

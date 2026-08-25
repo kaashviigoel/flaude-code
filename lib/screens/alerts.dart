@@ -12,8 +12,11 @@ class AlertsScreen extends StatefulWidget {
 
 class _AlertsScreenState extends State<AlertsScreen> {
   final WeatherApiService _apiService = WeatherApiService();
+
   WeatherAlerts? _alerts;
+
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -22,16 +25,48 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Future<void> _loadAlerts() async {
-    setState(() => _isLoading = true);
-    final position = await _apiService.currentPosition();
-    final alerts = await _apiService.fetchAlerts(
-      lat: position.latitude,
-      lon: position.longitude,
-    );
     if (mounted) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
+
+    try {
+      debugPrint('========== ALERTS ==========');
+      debugPrint('Starting location...');
+
+      final position = await _apiService.currentPosition();
+
+      debugPrint(
+        'Alert location: '
+        '${position.latitude}, ${position.longitude}',
+      );
+
+      final alerts = await _apiService.fetchAlerts(
+        lat: position.latitude,
+        lon: position.longitude,
+      );
+
+      debugPrint('Alerts received: ${alerts.items.length}');
+
+      if (!mounted) return;
+
       setState(() {
         _alerts = alerts;
         _isLoading = false;
+        _errorMessage = null;
+      });
+    } catch (e, stackTrace) {
+      debugPrint('========== ALERTS ERROR ==========');
+      debugPrint('ERROR: $e');
+      debugPrint('STACK TRACE: $stackTrace');
+
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _errorMessage = e.toString();
       });
     }
   }
@@ -42,27 +77,34 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
+
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(
           onRefresh: _loadAlerts,
           color: const Color(0xFFFFCD00),
+
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),
             ),
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 150),
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
-                // Top Brand Title
+                // --------------------------------------------------
+                // MAUSAM
+                // --------------------------------------------------
                 const Center(
                   child: Text(
                     'MAUSAM',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      letterSpacing: 8.0,
+                      letterSpacing: 8,
                       color: Colors.white,
                     ),
                   ),
@@ -70,7 +112,9 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                 const SizedBox(height: 24),
 
-                // Alerts Serif Title
+                // --------------------------------------------------
+                // TITLE
+                // --------------------------------------------------
                 const Text(
                   'Alerts',
                   style: TextStyle(
@@ -84,35 +128,42 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
                 const SizedBox(height: 14),
 
-                // Active Warnings Pill Badge
+                // --------------------------------------------------
+                // WARNING BADGE
+                // --------------------------------------------------
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
                   ),
+
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.1),
+                      color: Colors.white.withValues(alpha: 0.10),
                       width: 1,
                     ),
                   ),
+
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
+
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.warning_amber_rounded,
-                        color: Colors.white70,
+                        color: Colors.white.withValues(alpha: 0.7),
                         size: 14,
                       ),
+
                       const SizedBox(width: 6),
+
                       Text(
                         'ACTIVE WEATHER WARNINGS IN YOUR AREA',
                         style: TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 1.0,
+                          letterSpacing: 1,
                           color: Colors.white.withValues(alpha: 0.7),
                         ),
                       ),
@@ -120,9 +171,11 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
-                // Section Label
+                // --------------------------------------------------
+                // SECTION TITLE
+                // --------------------------------------------------
                 Text(
                   'ACTIVE ALERTS',
                   style: TextStyle(
@@ -133,62 +186,211 @@ class _AlertsScreenState extends State<AlertsScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 18),
 
-                // Alert Cards List
-                if (_isLoading && alertItems.isEmpty)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(
-                        color: Color(0xFFFFCD00),
-                      ),
+                // --------------------------------------------------
+                // LOADING
+                // --------------------------------------------------
+                if (_isLoading)
+                  _buildLoadingState()
+                // --------------------------------------------------
+                // ERROR
+                // --------------------------------------------------
+                else if (_errorMessage != null)
+                  _buildErrorState()
+                // --------------------------------------------------
+                // NO ALERTS
+                // --------------------------------------------------
+                else if (alertItems.isEmpty)
+                  _buildNoAlertsState()
+                // --------------------------------------------------
+                // ACTUAL ALERTS
+                // --------------------------------------------------
+                else
+                  ...alertItems.map(
+                    (alert) => Padding(
+                      padding: const EdgeInsets.only(bottom: 14),
+                      child: AlertCardWidget(alert: alert),
                     ),
-                  )
-                else ...[
-                  // Card 1: Critical Heavy Rain
-                  AlertCardWidget(
-                    alert: WeatherAlert(
-                      event: 'Heavy Rain Alert',
-                      severity: 'critical',
-                      description:
-                          'Expect severe localized flooding and significant travel disruption. Seek shelter immediately if outdoors.',
-                    ),
-                    locationName: 'Bengaluru',
-                    timeLabel: '8 PM',
                   ),
-
-                  // Card 2: Warning Heat Alert
-                  AlertCardWidget(
-                    alert: WeatherAlert(
-                      event: 'Heat Alert',
-                      severity: 'warning',
-                      description:
-                          'Extreme temperatures expected. Prolonged exposure may lead to heat exhaustion. Stay hydrated and indoors if possible.',
-                    ),
-                    locationName: 'Bengaluru',
-                    timeLabel: 'TOMORROW, 12-3 PM',
-                  ),
-
-                  // Card 3: Advisory Strong Wind
-                  AlertCardWidget(
-                    alert: WeatherAlert(
-                      event: 'Strong Wind',
-                      severity: 'advisory',
-                      description:
-                          'Gusts up to 45 km/h. Secure loose outdoor objects and exercise caution while driving high-profile vehicles.',
-                    ),
-                    locationName: 'Bengaluru Outskirts',
-                    timeLabel: 'ONGOING',
-                  ),
-
-                  // Any additional dynamic items from API
-                  ...alertItems.skip(3).map((a) => AlertCardWidget(alert: a)),
-                ],
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ================================================================
+  // LOADING
+  // ================================================================
+
+  Widget _buildLoadingState() {
+    return SizedBox(
+      width: double.infinity,
+      height: 260,
+
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+
+          children: [
+            const SizedBox(
+              width: 30,
+              height: 30,
+
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                color: Color(0xFFFFCD00),
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            Text(
+              'Checking your area...',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white.withValues(alpha: 0.55),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ================================================================
+  // ERROR
+  // ================================================================
+
+  Widget _buildErrorState() {
+    return Container(
+      width: double.infinity,
+
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 34),
+
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+
+      child: Column(
+        children: [
+          Icon(
+            Icons.cloud_off_rounded,
+            size: 42,
+            color: Colors.white.withValues(alpha: 0.45),
+          ),
+
+          const SizedBox(height: 16),
+
+          const Text(
+            'Alerts unavailable',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            'We couldn’t check for active weather warnings right now.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: Colors.white.withValues(alpha: 0.45),
+            ),
+          ),
+
+          const SizedBox(height: 22),
+
+          ElevatedButton(
+            onPressed: _loadAlerts,
+
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFCD00),
+              foregroundColor: Colors.black,
+              elevation: 0,
+
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+            ),
+
+            child: const Text(
+              'TRY AGAIN',
+              style: TextStyle(fontWeight: FontWeight.w700, letterSpacing: 0.5),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ================================================================
+  // NO ACTIVE ALERTS
+  // ================================================================
+
+  Widget _buildNoAlertsState() {
+    return Container(
+      width: double.infinity,
+
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 42),
+
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+      ),
+
+      child: Column(
+        children: [
+          Container(
+            width: 54,
+            height: 54,
+
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.05),
+            ),
+
+            child: Icon(
+              Icons.check_rounded,
+              size: 28,
+              color: Colors.white.withValues(alpha: 0.65),
+            ),
+          ),
+
+          const SizedBox(height: 18),
+
+          const Text(
+            'No active alerts',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            'There are no active weather warnings in your area.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.4,
+              color: Colors.white.withValues(alpha: 0.45),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -23,15 +23,15 @@ class AlertCardWidget extends StatelessWidget {
     String badgeText;
 
     if (severity == 'critical') {
-      severityColor = const Color(0xFFFF4B4B); // Vibrant Red
+      severityColor = const Color(0xFFFF4B4B);
       severityIcon = Icons.warning_amber_rounded;
       badgeText = 'CRITICAL';
     } else if (severity == 'warning') {
-      severityColor = const Color(0xFFFFCD00); // Vibrant Gold Yellow
+      severityColor = const Color(0xFFFFCD00);
       severityIcon = Icons.bolt_rounded;
       badgeText = 'WARNING';
     } else {
-      severityColor = const Color(0xFF4AC7F0); // Light Cyan
+      severityColor = const Color(0xFF4AC7F0);
       severityIcon = Icons.air_rounded;
       badgeText = 'ADVISORY';
     }
@@ -45,7 +45,6 @@ class AlertCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row: Badge & Time
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -79,7 +78,6 @@ class AlertCardWidget extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // Alert Title
           Text(
             alert.event ?? 'Weather Alert',
             style: const TextStyle(
@@ -92,7 +90,6 @@ class AlertCardWidget extends StatelessWidget {
 
           const SizedBox(height: 4),
 
-          // Location Subtitle
           Text(
             locationName,
             style: TextStyle(
@@ -103,7 +100,6 @@ class AlertCardWidget extends StatelessWidget {
 
           const SizedBox(height: 14),
 
-          // Alert Description
           Text(
             alert.description ?? 'No additional details provided.',
             style: TextStyle(

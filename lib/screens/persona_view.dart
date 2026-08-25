@@ -30,31 +30,29 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
   }
 
   Future<void> _loadData() async {
-    if (mounted) {
-      setState(() {
-        _loading = true;
-        _errorMessage = null;
-      });
-    }
-
     try {
-      final position = await _apiService.currentPosition().timeout(
-        const Duration(seconds: 10),
+      debugPrint('========== PERSONA WEATHER ==========');
+      debugPrint('Starting location...');
+
+      final position = await _apiService.currentPosition();
+
+      debugPrint(
+        'Location received: '
+        '${position.latitude}, ${position.longitude}',
       );
 
-      final data = await _apiService
-          .fetchDashboard(
-            lat: position.latitude,
-            lon: position.longitude,
-            persona: _backendPersona,
-          )
-          .timeout(const Duration(seconds: 15));
+      final data = await _apiService.fetchDashboard(
+        lat: position.latitude,
+        lon: position.longitude,
+        persona: widget.selectedMode ?? 'health',
+      );
+
+      debugPrint('Persona weather received.');
 
       if (!mounted) return;
 
       setState(() {
         _dashboardData = data;
-        _loading = false;
       });
     } catch (e, stackTrace) {
       debugPrint('================ WEATHER ERROR ================');
@@ -65,8 +63,7 @@ class _PersonaViewScreenState extends State<PersonaViewScreen> {
       if (!mounted) return;
 
       setState(() {
-        _loading = false;
-        _errorMessage = e.toString();
+        _dashboardData = null;
       });
     }
   }

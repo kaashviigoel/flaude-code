@@ -4,19 +4,22 @@ import 'package:mausam/widgets/glassmorphic_container.dart';
 class AqiCardWidget extends StatelessWidget {
   final String location;
   final String condition;
-  final int aqi;
+  final int? aqi;
   final String aqiStatus;
 
   const AqiCardWidget({
     super.key,
-    this.location = 'San Francisco',
-    this.condition = 'Partly Cloudy • 68°F',
-    this.aqi = 112,
-    this.aqiStatus = 'Unhealthy for Sensitive Groups',
+    required this.location,
+    this.condition = 'Air quality data unavailable',
+    this.aqi,
+    this.aqiStatus = 'Unavailable',
   });
 
   @override
   Widget build(BuildContext context) {
+    final hasAqi = aqi != null;
+    final safeAqi = (aqi ?? 0).clamp(0, 300).toDouble();
+
     return GlassmorphicContainer(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(22),
@@ -26,7 +29,6 @@ class AqiCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Location & Subtitle
           Text(
             location,
             style: const TextStyle(
@@ -35,7 +37,9 @@ class AqiCardWidget extends StatelessWidget {
               color: Colors.white,
             ),
           ),
+
           const SizedBox(height: 4),
+
           Text(
             condition,
             style: TextStyle(
@@ -46,7 +50,6 @@ class AqiCardWidget extends StatelessWidget {
 
           const SizedBox(height: 24),
 
-          // AQI Label and Value
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -62,11 +65,11 @@ class AqiCardWidget extends StatelessWidget {
                 ),
               ),
               Text(
-                '$aqi',
+                hasAqi ? '$aqi' : '—',
                 style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFFF68B8B), // Coral/Amber tone
+                  color: Color(0xFFF68B8B),
                 ),
               ),
             ],
@@ -74,11 +77,9 @@ class AqiCardWidget extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // AQI Spectrum Gradient Bar
           Stack(
             alignment: Alignment.centerLeft,
             children: [
-              // Background track
               Container(
                 height: 8,
                 width: double.infinity,
@@ -86,42 +87,35 @@ class AqiCardWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                   gradient: const LinearGradient(
                     colors: [
-                      Color(0xFF55C470), // Good (Green)
-                      Color(0xFFE8C654), // Moderate (Yellow)
-                      Color(0xFFF68B8B), // Unhealthy sensitive (Coral)
-                      Color(0xFFB56BF5), // Very unhealthy (Purple)
+                      Color(0xFF55C470),
+                      Color(0xFFE8C654),
+                      Color(0xFFF68B8B),
+                      Color(0xFFB56BF5),
                     ],
                   ),
                 ),
               ),
 
-              // Pointer indicator
-              FractionallySizedBox(
-                widthFactor: (aqi / 300.0).clamp(0.05, 0.95),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    width: 14,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.4),
-                          blurRadius: 4,
-                        ),
-                      ],
+              if (hasAqi)
+                FractionallySizedBox(
+                  widthFactor: (safeAqi / 300.0).clamp(0.05, 0.95),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: 14,
+                      height: 14,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
           ),
 
           const SizedBox(height: 10),
 
-          // Labels below bar
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -159,7 +153,18 @@ class AqiCardWidget extends StatelessWidget {
 }
 
 class PollenCardWidget extends StatelessWidget {
-  const PollenCardWidget({super.key});
+  final String level;
+  final double? tree;
+  final double? grass;
+  final double? weed;
+
+  const PollenCardWidget({
+    super.key,
+    this.level = 'Unavailable',
+    this.tree,
+    this.grass,
+    this.weed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -188,27 +193,35 @@ class PollenCardWidget extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 8),
-          const Text(
-            'High',
-            style: TextStyle(
+
+          Text(
+            level,
+            style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w700,
               color: Color(0xFFFFCD00),
             ),
           ),
+
           const SizedBox(height: 14),
-          _buildPollenRow('Tree', 0.85, const Color(0xFFFFCD00)),
+
+          _pollenRow('Tree', tree, const Color(0xFFFFCD00)),
+
           const SizedBox(height: 6),
-          _buildPollenRow('Grass', 0.40, const Color(0xFF6B82A0)),
+
+          _pollenRow('Grass', grass, const Color(0xFF6B82A0)),
+
           const SizedBox(height: 6),
-          _buildPollenRow('Weed', 0.25, const Color(0xFF4E637F)),
+
+          _pollenRow('Weed', weed, const Color(0xFF4E637F)),
         ],
       ),
     );
   }
 
-  Widget _buildPollenRow(String label, double factor, Color color) {
+  Widget _pollenRow(String label, double? value, Color color) {
     return Row(
       children: [
         SizedBox(
@@ -221,14 +234,17 @@ class PollenCardWidget extends StatelessWidget {
             ),
           ),
         ),
+
         Expanded(
           child: ClipRRect(
             borderRadius: BorderRadius.circular(3),
             child: LinearProgressIndicator(
-              value: factor,
-              backgroundColor: Colors.white.withValues(alpha: 0.08),
-              valueColor: AlwaysStoppedAnimation<Color>(color),
+              value: value,
               minHeight: 5,
+              backgroundColor: Colors.white.withValues(alpha: 0.08),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                value == null ? Colors.white24 : color,
+              ),
             ),
           ),
         ),
@@ -238,12 +254,22 @@ class PollenCardWidget extends StatelessWidget {
 }
 
 class UvCardWidget extends StatelessWidget {
-  final double uvIndex;
+  final double? uvIndex;
 
-  const UvCardWidget({super.key, this.uvIndex = 6.0});
+  const UvCardWidget({super.key, this.uvIndex});
+
+  String _label(double value) {
+    if (value < 3) return 'Low';
+    if (value < 6) return 'Moderate';
+    if (value < 8) return 'High';
+    if (value < 11) return 'Very High';
+    return 'Extreme';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final value = uvIndex;
+
     return GlassmorphicContainer(
       padding: const EdgeInsets.all(18),
       borderRadius: 20,
@@ -269,23 +295,27 @@ class UvCardWidget extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 8),
+
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
               Text(
-                '${uvIndex.toInt()}',
+                value == null ? '—' : value.toStringAsFixed(0),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
               ),
+
               const SizedBox(width: 6),
-              const Text(
-                'High',
-                style: TextStyle(
+
+              Text(
+                value == null ? 'Unavailable' : _label(value),
+                style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFFFFCD00),
@@ -293,13 +323,14 @@ class UvCardWidget extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 6),
+
           Text(
-            'Protection needed until 4 PM',
+            value == null ? 'UV data unavailable' : 'Current UV exposure',
             style: TextStyle(
               fontSize: 11,
               color: Colors.white.withValues(alpha: 0.5),
-              height: 1.3,
             ),
           ),
         ],
@@ -309,12 +340,21 @@ class UvCardWidget extends StatelessWidget {
 }
 
 class HumidityCardWidget extends StatelessWidget {
-  final double humidity;
+  final double? humidity;
 
-  const HumidityCardWidget({super.key, this.humidity = 42.0});
+  const HumidityCardWidget({super.key, this.humidity});
+
+  String _label(double value) {
+    if (value < 30) return 'Dry';
+    if (value <= 60) return 'Comfortable';
+    if (value <= 75) return 'Humid';
+    return 'Very Humid';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final value = humidity;
+
     return GlassmorphicContainer(
       padding: const EdgeInsets.all(18),
       borderRadius: 20,
@@ -340,18 +380,22 @@ class HumidityCardWidget extends StatelessWidget {
               ),
             ],
           ),
+
           const SizedBox(height: 8),
+
           Text(
-            '${humidity.toInt()}%',
+            value == null ? '—' : '${value.toStringAsFixed(0)}%',
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
           ),
+
           const SizedBox(height: 6),
+
           Text(
-            'Optimal for comfort',
+            value == null ? 'Humidity data unavailable' : _label(value),
             style: TextStyle(
               fontSize: 11,
               color: Colors.white.withValues(alpha: 0.5),

@@ -1,6 +1,6 @@
 class UserPreferences {
   final String persona;
-  final String temperatureUnit; // 'celsius' or 'fahrenheit'
+  final String temperatureUnit;
   final bool notificationsEnabled;
 
   UserPreferences({
